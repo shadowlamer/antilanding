@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<!-- ============================================================
+     АНТИЛЕНДИНГ — один файл, без сборки и зависимостей.
+     Структура: <style> (все стили) → HERO → секции [01]…[08] → footer.
+     Как править текст: ищешь секцию по номеру в комментарии
+     «=== [NN] …» и правишь текст внутри. Разметку карточек
+     копируешь с соседней карточки — они однотипны.
+     Просмотр: python3 -m http.server 8000 в каталоге сайта.
+     ============================================================ -->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Название вкладки браузера и описание для поисковиков -->
+<title>Разработка электроники — Вадим Черенёв</title>
+<meta name="description" content="Разработка электроники на заказ: схема, плата, прошивка, облако. 20 лет практики, Пермь.">
+<meta name="theme-color" content="#0b0e14">
+<style>
+/* ============================================================
+   СТИЛИ. Палитра задана переменными в :root — цвет меняется
+   в одном месте, весь сайт перекрашивается.
+   ============================================================ */
+
+/* Дизайн — как у нормального лендинга. */
+:root {
+  --bg: #0b0e14;        /* фон страницы (почти чёрный) */
+  --surface: #12161f;   /* фон карточек и плашек */
+  --text: #c9d1d9;      /* основной текст */
+  --dim: #8b949e;       /* приглушённый текст (описания, подписи) */
+  --nixie: #d4a24e;     /* акцент: медно-янтарный, «нixie-свечение» (цифры, метки) */
+  --scope: #57d98f;     /* зелёный осциллографа (ссылки, «хорошие» строки) */
+  --warn: #e06c75;      /* тревожный красный (плохие цифры, крестики) */
+  --line: rgba(212, 162, 78, 0.22);      /* янтарная рамка (кнопки) */
+  --line-dim: rgba(139, 148, 158, 0.16); /* серые линии-разделители */
+  --mono: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "PT Sans", sans-serif;
+  --maxw: 60rem;        /* максимальная ширина контента */
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+.mono { font-family: var(--mono); }                       /* моноширинный текст (метки, цифры) */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 1.5rem; } /* центрирует контент каждой секции */
+
+/* ---------- HERO: первый экран, до первого заголовка [01] ---------- */
+.hero { padding: 6rem 0 4rem; border-bottom: 1px solid var(--line-dim); }
+.eyebrow { color: var(--nixie); font-size: 0.85rem; letter-spacing: 0.08em; margin: 0 0 1rem; } /* строка «// Вадим Черенёв…» */
+h1 { margin: 0 0 0.8rem; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.1; color: #e6edf3; } /* главный заголовок */
+.tagline { margin: 0 0 1.6rem; font-size: clamp(1.05rem, 2.6vw, 1.3rem); max-width: 44rem; } /* подзаголовок под h1 */
+.tagline q { color: var(--dim); font-style: italic; }
+.hero-note { color: var(--dim); font-size: 0.92rem; margin: 1.1rem 0 0; } /* мелкая приписка под hero */
+.btn {           /* кнопка (сейчас не используется — кнопки из hero убраны) */
+  display: inline-block; padding: 0.65rem 1.4rem; margin: 0 0.8rem 0.8rem 0;
+  border: 1px solid var(--line); border-radius: 6px;
+  font-family: var(--mono); font-size: 0.95rem; color: var(--text);
+  text-decoration: none;
+}
+.btn:hover { border-color: var(--nixie); }
+.btn-primary { background: rgba(212, 162, 78, 0.12); border-color: var(--nixie); color: var(--nixie); } /* главная (жёлтая) кнопка */
+
+/* ---------- СЕКЦИИ: общий каркас всех блоков [01]…[08] ---------- */
+section { padding: 3.5rem 0; border-bottom: 1px solid var(--line-dim); } /* каждая секция — с отступом и линией снизу */
+h2 { margin: 0 0 0.4rem; font-size: 1.4rem; color: #e6edf3; }            /* заголовок секции */
+h2 .idx { color: var(--nixie); font-weight: 400; font-size: 0.8em; }     /* номер «[01]» в заголовке */
+.note { color: var(--dim); margin: 0 0 1.8rem; }                         /* серое пояснение под заголовком секции */
+
+/* статы: плитки-цифры секции [01] */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1px; background: var(--line-dim); border: 1px solid var(--line-dim); border-radius: 8px; overflow: hidden; }
+.stat { background: var(--surface); padding: 1.6rem 1rem; text-align: center; } /* одна плитка */
+.digits { display: flex; align-items: center; justify-content: center; gap: 0.25rem; } /* ряд nixie-ламп: число из фото + знаков */
+.digits img { height: clamp(2.8rem, 8vw, 4.8rem); width: auto; border: 1px solid var(--line-dim); border-radius: 0.45rem; background: #000; } /* лампа-цифра (img/nixie/N.jpg) */
+.digits img.rot { transform: rotate(90deg); } /* лампа набок: восьмёрка → знак бесконечности */
+.digits span { font-family: var(--mono); font-size: clamp(1.1rem, 3.5vw, 1.9rem); color: var(--nixie); text-shadow: 0 0 8px rgba(212,162,78,.5); } /* знак «+» или «/» между лампами */
+.stat.bad .digits img { border-color: rgba(224,108,117,.55); } /* «плохая» плитка (класс bad) — красная рамка вокруг ламп */
+.stat small { display: block; color: var(--dim); font-size: 0.85rem; margin-top: 0.4rem; } /* подпись под цифрой */
+
+/* ============================================================
+   КАРТОЧКИ проектов всех секций [03]–[06].
+   Анатомия карточки с фото (порядок важен):
+     <div class="card">
+       <img class="card-photo" …>   главное фото 16:10, первым элементом
+       <h3>Название</h3>
+       <p class="mono" style="…">год · категория</p>   жёлтая метка
+       <p>Описание…</p>
+       <div class="card-more">…</div>  (не обязательно) доп. фото
+       <p class="src">— техстрип</p>   строка внизу, через пунктир
+     </div>
+   ============================================================ */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; } /* сетка карточек, сами встают в ряды */
+.card { background: var(--surface); border: 1px solid var(--line-dim); border-radius: 8px; padding: 1.2rem 1.3rem; }
+.card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; color: #e6edf3; }
+.card p { margin: 0; font-size: 0.92rem; color: var(--dim); }
+.card .src { margin: 0.8rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--line-dim); font-family: var(--mono); font-size: 0.7rem; color: rgba(212,162,78,.65); }
+.card-photo {   /* главное фото карточки: прижимается к краям, сверху */
+  display: block; width: calc(100% + 2.6rem); margin: -1.2rem -1.3rem 1rem;
+  aspect-ratio: 16 / 10; object-fit: cover; object-position: center;
+  border-radius: 7px 7px 0 0; border-bottom: 1px solid var(--line-dim);
+  background: #000;
+}
+.card-more { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin: 0.9rem 0 0; } /* доп. фото после текста: 2 в ряд */
+.card-more figure { margin: 0; }
+.card-more img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+  border-radius: 6px; border: 1px solid var(--line-dim); background: #000; }
+.card-more figure.wide { grid-column: 1 / -1; }      /* одно фото на всю ширину карточки */
+.card-more figure.wide img { aspect-ratio: auto; }   /* …и без обрезки пропорций (для скриншотов/документов) */
+.card-more figcaption { font-family: var(--mono); font-size: 0.65rem; color: var(--dim); margin-top: 0.3rem; } /* подпись под доп. фото */
+
+/* большое фото на всю ширину секции [02] */
+.shot { display: block; width: 100%; border-radius: 8px; border: 1px solid var(--line-dim); background: #000; }
+
+/* список грехов: секция [07], каждый пункт — <li><b>Жирное начало</b> — пояснение</li>, крестик ставится сам */
+.sins { list-style: none; margin: 0; padding: 0; }
+.sins li { padding: 0.55rem 0 0.55rem 2rem; position: relative; border-bottom: 1px dashed var(--line-dim); color: var(--dim); }
+.sins li::before { content: "✗"; position: absolute; left: 0.4rem; color: var(--warn); font-family: var(--mono); }
+.sins li b { color: var(--text); font-weight: 600; }
+
+footer { padding: 2rem 0 2.5rem; text-align: center; font-size: 0.8rem; color: var(--dim); } /* подвал: копирайт и три строки */
+footer p { margin: 0.3rem 0; }
+a { color: var(--scope); text-decoration: none; }
+a:hover { text-decoration: underline; }
+@media (max-width: 720px) { .hero { padding: 4rem 0 3rem; } section { padding: 2.5rem 0; } } /* мобильные: сжать отступы */
+</style>
+</head>
+<body>
+
+<!-- === HERO: первый экран. eyebrow — строка с именем, h1 — суть,
+     tagline — стек и стаж. Кнопок нет (убраны). === -->
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow mono">// Вадим Черенёв · Пермь</p>
+    <h1>Разработка электроники</h1>
+    <p class="tagline">Схема → плата → прошивка → Linux → облако. 20 лет практики.</p>
+  </div>
+</header>
+
+<!-- === [01] ЦИФРЫ: четыре плитки-стата. Число — фотографии реальных
+     nixie-индикаторов: div.digits, внутри img (img/nixie/N.jpg, где N —
+     цифра; в каталоге есть все 0–9, +.jpg — знак «плюс» и off.jpg —
+     негорящая лампа). Текстовые знаки («от», «₽») — <span>. Класс rot
+     кладёт лампу набок (восьмёрка → бесконечность). Класс bad у плитки —
+     красная рамка вокруг ламп. Подпись — в <small>.
+     Новая плитка = скопировать div.stat. === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[01]</span> Наш опыт в цифрах</h2>
+    <div class="stats">
+      <div class="stat">
+        <div class="digits"><img src="img/nixie/2.jpg" alt="2"><img src="img/nixie/0.jpg" alt="0"><img src="img/nixie/+.jpg" alt="+"></div>
+        <small>лет практики</small>
+      </div>
+      <div class="stat">
+        <div class="digits"><img src="img/nixie/1.jpg" alt="1"></div>
+        <small>инженер в команде</small>
+      </div>
+      <div class="stat">
+        <div class="digits"><span>от</span><img src="img/nixie/0.jpg" alt="0"><span>₽</span></div>
+        <small>стоимость консультации</small>
+      </div>
+      <div class="stat bad">
+        <div class="digits"><img class="rot" src="img/nixie/8.jpg" alt="∞"></div>
+        <small>сроки выполнения</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === [02] СОБСТВЕННОЕ ПРОИЗВОДСТВО: одно фото рабочего места (16:9)
+     вместо SMT-линий и дизайн-центров конкурентов. Стиль .shot — на всю
+     ширину контейнера, без обрезки пропорций. === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[02]</span> Собственное производство</h2>
+    <p class="note">Разработка, прототипирование, производство — всё в одном месте.</p>
+    <img class="shot" src="img/workspace.jpg" alt="Мастерская: над столом аналоговый осциллограф и лабораторный блок питания, на стене самодельная плата с семисегментными индикаторами, справа 3D-принтер с напечатанными шестерёнками, слева развешанный инструмент; на полке огнетушитель">
+  </div>
+</section>
+
+<!-- === [03] УСЛУГИ: три карточки без фото (h3 + текст). === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[03]</span> Что мы делаем</h2>
+    <p class="note">Без «под ключ» и «полного цикла». Как есть.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Соберу быстро</h3>
+        <p>Могу в сжатые сроки дендрофекальным методом собрать что угодно.
+           Но результаты оно покажет средние.</p>
+      </div>
+      <div class="card">
+        <h3>Доведу до серии</h3>
+        <p>Сделаю тестовые образцы, отлажу, соберу стенды, подготовлю документацию, а толку? Все равно не взлетит.</p>
+      </div>
+      <div class="card">
+        <h3>Не исчезну после прототипа.</h3>
+        <p>А куда мне деваться? Но вам бы лучше обратиться к нормальным специалистам.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === [04] КОММЕРЧЕСКИЕ ПРОЕКТЫ: две карточки, по одному фото на
+     линейку. Анатомия: card-photo (главное фото 16:10, 1200×750) первым
+     элементом, затем h3, mono-метка года, текст и src (техстрип внизу).
+     Реальных организаций не называть. === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[04]</span> Коммерческие проекты</h2>
+    <p class="note">Две линейки, за которые платили деньги. Компании в итоге проявили редкое благоразумие и перешли на проекты других разработчиков. Сами компании успешно существуют до сих пор.</p>
+    <div class="grid">
+
+      <!-- карточка: фото → заголовок → метка → текст → техстрип -->
+      <div class="card">
+        <img class="card-photo" src="img/vending-batch.jpg" alt="Восемь одинаковых синих плат в антистатической упаковке: реле, USB-гнездо, клеммники; логотип производителя скрыт размытием">
+        <h3>Линейка контроллеров для вендинговых автоматов</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2017–2020</p>
+        <p>Вся электроника и ПО, MQTT-телеметрия и облако. Производство, документация, стенды.</p>
+        <p class="src">— STM8 → STM32 → OrangePi</p>
+      </div>
+
+      <!-- карточка: фото → заголовок → метка → текст → техстрип -->
+      <div class="card">
+        <img class="card-photo" src="img/smarthome-relays.jpg" alt="Гребёнка модулей умного дома: десятки одинаковых маленьких зелёных плат с клеммниками и предохранителями, соединённых жгутами проводов в термоусадке">
+        <h3>Линейка устройств «умного дома»</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2003–2008</p>
+        <p>Линейка модулей на RS-485: реле, диммеры, входы, сценарии;
+           опрос 247 устройств за секунду. Компания выросла из моего
+           курсового, но вклад по CV скромнее: «часть устройств линейки
+           LanDrive2» и «честный» ModBus.</p>
+        <p class="src">— AVR ATmega/ATtiny · Modbus RTU · ТУ 2007</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === [05] ОТКРЫТЫЕ ПУБЛИКАЦИИ: шесть однотипных карточек с фото
+     (анатомия — см. [04]). В src — метрики oshwlab. Счёт в note сверху
+     и снизу («Шесть…», «двенадцать») править при изменении числа карточек:
+     всего проектов 18. === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[05]</span> Открытые публикации</h2>
+    <p class="note">Шесть из восемнадцати проектов на oshwlab. Метрики живые
+       на 2026-09-02 и сами всё говорят. Пустые описания публикаций
+       сохранены аутентично.</p>
+    <div class="grid">
+      <div class="card">
+        <img class="card-photo" src="img/modrep.jpg" alt="Панель из нескольких одинаковых маленьких плат с распаянными SMD-компонентами; на каждой стабилизатор в корпусе DPAK, ручная пайка, следы флюса">
+        <h3>Репитер ModBus за $5</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2018 · RS-485</p>
+        <p>Репитер шины ModBus, целиком укладывающийся в пять долларов
+           BOM — отсюда и название. Обновлялся до 2025 года: 4 тысячи
+           просмотров и 9 звёзд, вторая по популярности публикация.</p>
+        <p class="src">— STM8S001 · 4088 просмотров · 9★</p>
+      </div>
+      <div class="card">
+        <img class="card-photo" src="img/pwm.jpg" alt="Плата контроллера ШИМ: микроконтроллер LQFP-48 по центру, клеммные колодки по краям, MOSFET-ключи, интерфейс RS-485; плата лежит на зелёной ткани">
+        <h3>ModBus-контроллер ШИМ, 6 каналов</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2018 · свет</p>
+        <p>Шесть ШИМ-каналов — «ещё один RGB-контроллер», как честно
+           сказано в слаге публикации. Три тысячи просмотров, пять
+           форков при двух звёздах: копировали молча.</p>
+        <p class="src">— слаг: Another_RGB_LED_controller · 3060 просмотров · 2★</p>
+      </div>
+      <div class="card">
+        <img class="card-photo" src="img/dtmf.jpg" alt="Плата с восемью чёрными реле в два ряда и синими клеммными колодками по краям, на светлом деревянном столе">
+        <h3>DTMF-контроллер на 8 реле</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2018 · телефония</p>
+        <p>Восемь реле, которыми управляют тонами набора номера.
+           ULN2803 на восемь каналов, обновления до 2024 года,
+           четыре форка — люди собирали себе.</p>
+        <p class="src">— oshwlab.com/shadowlamer/dtmfcont · 3331 просмотр</p>
+      </div>
+      <div class="card">
+        <img class="card-photo" src="img/mincer.jpg" alt="Длинная узкая плата с двумя рядами светодиодов в каркасе, лежит на полу">
+        <h3>Светодиодная мясорубка</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2018 · POV</p>
+        <p>POV-прядильщик: линейка светодиодов на подшипнике 158928Z
+           рисует картинку в воздухе. Две платы — голова и база.
+           На фото голова, вне вращения.</p>
+        <p class="src">— LED mincer · STM32F030 + ULN2003 · 1486 просмотров</p>
+      </div>
+      <div class="card">
+        <img class="card-photo" src="img/charger.jpg" alt="Маленькая плата с SMD-компонентами и USB-гнездом на плетёной салфетке; обильные капли припоя на дорожках">
+        <h3>Литиевое зарядное устройство</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2018 · питание</p>
+        <p>Зарядное для литиевых банок на трёх LM317 — сорокалетнему
+           регулятору нашлась работа. Полторы тысячи просмотров,
+           ноль лайков и форков: работает — и ладно.</p>
+        <p class="src">— LM317 ×3 · 1405 просмотров</p>
+      </div>
+      <div class="card">
+        <img class="card-photo" src="img/bcse-car.jpg" alt="Робот-тележка из красных печатных плат на перфорированных пластинах: серво, батарея на скотче, провода без укладки">
+        <h3>Лучший конструктор в истории</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2019 · электронный конструктор</p>
+        <p>Английское название (Best Construction Set Ever) обещает
+           именно это, шелкография честно уточняет: v0.1. Пять плат,
+           BOM на 34 позиции, гайки и болты. На фото — робот: батарея
+           на скотче, провода не уложены.</p>
+        <p class="src">— oshwlab.com/shadowlamer/BCSE · Public Domain · 1,8k просмотров</p>
+      </div>
+    </div>
+    <p class="note" style="margin: 1.6rem 0 0;">Остальные двенадцать — в профиле
+       <a href="https://oshwlab.com/shadowlamer">oshwlab.com/shadowlamer</a>.</p>
+  </div>
+</section>
+
+<!-- === [06] ГАЛЕРЕЯ НЕЗАВЕРШЁННОГО: три карточки-экспоната.
+     id="unfinished" — якорь (оставлен под будущие ссылки). === -->
+<section id="unfinished">
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[06]</span> Галерея незавершённого</h2>
+    <p class="note">Большинство не взлетело, часть не доделана;
+       одна дошла до серии.</p>
+    <div class="grid">
+      <!-- экспонат: пои (наследники костюмов) — фото костюма ждём -->
+      <div class="card">
+        <img class="card-photo" src="img/poi.jpg" alt="Два самодельных LED-пои: прозрачные корпуса с литиевыми аккумуляторами 18650 и адресными светодиодными лентами, плетёные шнуры с карабинами">
+        <h3>Светодиодные костюмы</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2012–2014 · не продолжена</p>
+        <p>Светомузыка на теле: ATmega, FatFs, шоу с SD-карты, FHT-анализ
+           звука в реальном времени, 24 ШИМ-канала. Был и редактор шоу —
+           ShowMaker. Костюмы кончились, пои — нет.</p>
+      </div>
+      <!-- экспонат: фото прибора + скриншот софта -->
+      <div class="card">
+        <img class="card-photo" src="img/rheo-device.jpg" alt="Самодельный прибор на плате-основании: микросхемы в DIP-корпусах, проводной монтаж, стрелочная головка, переключатель диапазонов и тумблеры">
+        <h3>Реоплетизмограф</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">~2008 · заброшен</p>
+        <p>Медицинский прибор, заявка на изобретение, Lazarus-софт.
+           Не взлетел. Заявка осталась заявкой.</p>
+        <div class="card-more">
+          <figure class="wide">
+            <img src="img/rheo-screen.jpg" alt="Окно программы на Lazarus: два канала — пульсовая волна и её производная, зелёная и голубая кривые на тёмном фоне">
+            <figcaption>Lazarus-софт: реограмма и её производная</figcaption>
+          </figure>
+        </div>
+      </div>
+      <!-- экспонат: серийный модуль + свидетельство -->
+      <div class="card">
+        <img class="card-photo" src="img/melissa-module.jpg" alt="Серийный модуль «МЕЛИССА-ТМ-У-4000» на DIN-рейке: штыревая антенна с SMA-разъёмом, зелёные клеммники, на этикетке — MAC-адрес, серийный номер, адрес MODBUS и ТУ 4232-001-60719387-11">
+        <h3>Мелисса-ТМ</h3>
+        <p class="mono" style="color: var(--nixie); font-size:0.8rem;">2011–2015 · не продолжена</p>
+        <p>Телематика на ZigBee Pro mesh с FreeModbus; ТУ
+           4232-001-60719387-11 с подписью главного инженера.
+           Дошла до двух циклов производства — и осталась
+           в галерее незавершённого.</p>
+        <div class="card-more">
+          <figure class="wide">
+            <img src="img/melissa-certificate.jpg" alt="Стопка документов, верхний лист — свидетельство об утверждении типа средств измерений с гербовой печатью">
+            <figcaption>свидетельство об утверждении типа средств измерений</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === [07] ПОЧЕМУ НЕ НАДО НАНИМАТЬ: список «грехов», каждый пункт —
+     <li><b>Жирное начало</b> — пояснение</li>. Крестик ✗ ставится сам
+     (CSS ::before). В note упоминается счёт пунктов — править при изменении. === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[07]</span> Почему меня не надо нанимать</h2>
+    <p class="note">Список открытый, потому что скрыть пункт —
+       значит добавить его шестым.</p>
+    <ul class="sins">
+      <li><b>Весь проект в одной голове</b> — кроме меня, в него никто не вникал:
+          нового исполнителя придётся вводить в курс дела с нуля</li>
+      <li><b>Все роли на мне</b> — схемотехник, программист, механик и тестировщик
+          в одном лице, отдельного эксперта по каждому слою нет</li>
+      <li><b>Проекты идут по очереди</b> — не распараллеливаю: пока делаю один,
+          второй ждёт</li>
+      <li><b>Серийный монтаж не делаю</b> — прототипы паяю сам, серии размещаю
+          у подрядчиков</li>
+      <li><b>Сроки назову после ТЗ</b> — «от 14 рабочих дней» не обещаю</li>
+    </ul>
+  </div>
+</section>
+
+<!-- === [08] КОНТАКТ: заголовок-антифраза и одна строка. === -->
+<section>
+  <div class="wrap">
+    <h2 class="mono"><span class="idx">[08]</span> Контакт</h2>
+    <p class="note" style="font-size: 1.05rem; color: var(--text);">Нет смысла со мной
+       связываться, так как времени у меня всё равно нет.</p>
+  </div>
+</section>
+
+<!-- === ПОДВАЛ: копирайт и две строки-подписи. === -->
+<footer>
+  <p class="mono">© 2026 Вадим Черенёв · Пермь</p>
+  <p class="mono">Сделано дендрофекальным методом. Сайт без фреймворков и без сборки.</p>
+</footer>
+
+</body>
+</html>
